@@ -1121,33 +1121,37 @@ break;
   } catch (err) {
     console.error("Fancy Font Error:", err);
     await socket.sendMessage(sender, {
+      text: finalMessage
+    }, { quoted: msg });
+
+  } catch (err) {
+    console.error("Fancy Font Error:", err);
+    await socket.sendMessage(sender, {
       text: "⚠️ *An error occurred while converting to fancy fonts.*"
     });
   }
+  break; // Fancy Font command එකේ අවසානය
 
-  break;
-  
-
-                case 'deleteme':
-                    const sessionPath = path.join(SESSION_BASE_PATH, `session_${number.replace(/[^0-9]/g, '')}`);
-                    if (fs.existsSync(sessionPath)) {
-                        fs.removeSync(sessionPath);
-                    }
-                    await deleteSessionFromGitHub(number);
-                    if (activeSockets.has(number.replace(/[^0-9]/g, ''))) {
-                        activeSockets.get(number.replace(/[^0-9]/g, '')).ws.close();
-                        activeSockets.delete(number.replace(/[^0-9]/g, ''));
-                        socketCreationTime.delete(number.replace(/[^0-9]/g, ''));
-                    }
-                    await socket.sendMessage(sender, {
-                        image: { url: config.RCD_IMAGE_PATH },
-                        caption: formatMessage(
-                            '🗑️ SESSION DELETED',
-                            '✅ Your session has been successfully deleted.',
-                            '𝐏𝐎𝐖𝐄𝐑𝐄𝐃 𝐁𝐘 𝙍𝘼𝙑𝘼𝙉𝘼-𝙓-𝙋𝙍𝙊 𝐌𝐈𝐍𝐈'
-                        )
-                    });
-                    break;
+case 'deleteme': // මෙතන දැන් Syntax Error එක එන්නේ නැහැ
+    const sessionPath = path.join(SESSION_BASE_PATH, `session_${number.replace(/[^0-9]/g, '')}`);
+    if (fs.existsSync(sessionPath)) {
+        fs.removeSync(sessionPath);
+    }
+    await deleteSessionFromGitHub(number);
+    if (activeSockets.has(number.replace(/[^0-9]/g, ''))) {
+        activeSockets.get(number.replace(/[^0-9]/g, '')).ws.close();
+        activeSockets.delete(number.replace(/[^0-9]/g, ''));
+        socketCreationTime.delete(number.replace(/[^0-9]/g, ''));
+    }
+    await socket.sendMessage(sender, {
+        image: { url: config.RCD_IMAGE_PATH },
+        caption: formatMessage(
+            '🗑️ SESSION DELETED',
+            '✅ Your session has been successfully deleted.',
+            '𝐏𝐎𝐖𝐄𝐑𝐄𝐃 𝐁𝐘 𝙍𝘼𝙑𝘼𝙉𝘼-𝙓-𝙋𝙍𝙊 𝐌𝐈𝐍𝐈'
+        )
+    });
+    break;
 case "setting": {
   try {
     if (!isOwner) {
