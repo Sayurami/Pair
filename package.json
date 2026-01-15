@@ -19,7 +19,7 @@
     "denethdev-ytmp3":"1.0.3",
     "node-cache": "5.1.2",
     "cheerio": "1.1.0",
-    "chalk": "4.1.2",
+    "chalk": "latest",
     "ruhend-scraper": "9.0.1",
     "yt-search": "2.13.1",
     "mongoose": "^8.6.1",
