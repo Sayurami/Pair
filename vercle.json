@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "/pair.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/",
+      "dest": "/main.html"
+    }
+  ],
+  "env": {
+    "MONGODB_URI": "mongodb://mongo:KxWURLAqNzfJuONVlTeZAxxsBgTccuCx@yamabiko.proxy.rlwy.net:54933"
+  }
+}
