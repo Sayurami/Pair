@@ -1,13 +1,19 @@
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
 
-// 1. සෙටින්ග්ස් සේව් කරන්න 'configs' නමින් ෆෝල්ඩර් එකක් හදාගන්නවා.
-const configDir = path.join(__dirname, 'configs');
+// Vercel වලදී ලියන්න අවසර තියෙන්නේ /tmp ෆෝල්ඩර් එකට විතරයි.
+// ඒ නිසා අපි configDir එක /tmp වලට මාරු කරනවා.
+const configDir = path.join(os.tmpdir(), 'configs');
+
 if (!fs.existsSync(configDir)) {
-    fs.mkdirSync(configDir);
+    try {
+        fs.mkdirSync(configDir, { recursive: true });
+    } catch (err) {
+        console.log("Folder creation skipped or failed:", err.message);
+    }
 }
 
-// 2. බොට්ගේ මූලික සෙටින්ග්ස් (Default Settings) ටික මෙතැන තියෙනවා.
 const defaultConfigs = {
     ANTI_DELETE: 'off',
     ANTI_CALL: 'off',
@@ -21,12 +27,10 @@ const defaultConfigs = {
     BUTTON: 'on'
 };
 
-// 3. ඩේටාබේස් එක තියෙන තැන සොයාගන්නා ෆන්ක්ෂන් එක.
 function getDbPath(dbName) {
     return path.join(configDir, dbName + '.json');
 }
 
-// 4. ඩේටාබේස් එක සම්බන්ධ කරන ෆන්ක්ෂන් එක (ෆයිල් එක නැත්නම් හදනවා).
 async function connectdb(dbName) {
     const dbPath = getDbPath(dbName);
     if (!fs.existsSync(dbPath)) {
@@ -34,7 +38,6 @@ async function connectdb(dbName) {
     }
 }
 
-// 5. අලුතින් ඩේටා ඇතුළත් කරන ෆන්ක්ෂන් එක.
 async function input(key, value, dbName) {
     const dbPath = getDbPath(dbName);
     let data = {};
@@ -45,7 +48,6 @@ async function input(key, value, dbName) {
     fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));
 }
 
-// 6. සේව් කරපු ඩේටා එකක් ආපසු ලබාගන්නා ෆන්ක්ෂන් එක.
 async function get(key, dbName) {
     const dbPath = getDbPath(dbName);
     if (fs.existsSync(dbPath)) {
@@ -55,7 +57,6 @@ async function get(key, dbName) {
     return null;
 }
 
-// 7. සියලුම සෙටින්ග්ස් ටික එකවර ලබාගැනීම.
 async function getalls(dbName) {
     const dbPath = getDbPath(dbName);
     if (fs.existsSync(dbPath)) {
@@ -64,13 +65,11 @@ async function getalls(dbName) {
     return null;
 }
 
-// 8. සෙටින්ග්ස් තිබුණු විදියටම රීසෙට් (Reset) කිරීම.
 async function resetSettings(dbName) {
     const dbPath = getDbPath(dbName);
     fs.writeFileSync(dbPath, JSON.stringify(defaultConfigs, null, 2));
 }
 
-// මේ ෆන්ක්ෂන් ටික වෙනත් ෆයිල් එකක පාවිච්චි කරන්න අවසර දෙනවා.
 module.exports = {
     connectdb,
     input,
