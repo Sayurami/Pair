@@ -12,7 +12,7 @@ const Jimp = require('jimp');
 const crypto = require('crypto');
 const axios = require('axios');
 const os = require('os');
-const { sms, downloadMediaMessage } = require("./msg");
+
 var {
   connectdb,
   input,
