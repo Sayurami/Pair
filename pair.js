@@ -1081,84 +1081,57 @@ break;
   break;
 }
               case 'fancy': {
-  const axios = require("axios");
+                try {
+                    const text = args.join(" ");
+                    if (!text) return reply("⚠️ Please provide text to convert.");
+                    
+                    const response = await axios.get(`https://www.dark-yasiya-api.site/other/font?text=${encodeURIComponent(text)}`);
+                    
+                    if (response.data && response.data.result) {
+                        const fontList = response.data.result
+                            .map(font => `*${font.name}:*\n${font.result}`)
+                            .join("\n\n");
 
-  const q =
-    msg.message?.conversation ||
-    msg.message?.extendedTextMessage?.text ||
-    msg.message?.imageMessage?.caption ||
-    msg.message?.videoMessage?.caption || '';
+                        const fancyMessage = `🎨 *Fancy Fonts Converter*\n\n${fontList}\n\n_𝙍𝘼𝙑𝘼𝙉𝘼-𝙓-𝙋𝙍𝙊 𝙈𝙄𝙉𝙄_`;
+                        
+                        await socket.sendMessage(from, { text: fancyMessage }, { quoted: msg });
+                    } else {
+                        await reply("❌ Error fetching fonts from API.");
+                    }
+                } catch (err) {
+                    console.error("Fancy Font Error:", err);
+                    await reply("⚠️ *An error occurred while converting fonts.*");
+                }
+                break;
+            }
 
-  const text = q.trim().replace(/^.fancy\s+/i, ""); // remove .fancy prefix
-
-  if (!text) {
-    return await socket.sendMessage(sender, {
-      text: "❎ *Please provide text to convert into fancy fonts.*\n\n📌 *Example:* `.fancy Sula`"
-    });
-  }
-
-  try {
-    const apiUrl = `https://www.dark-yasiya-api.site/other/font?text=${encodeURIComponent(text)}`;
-    const response = await axios.get(apiUrl);
-
-    if (!response.data.status || !response.data.result) {
-      return await socket.sendMessage(sender, {
-        text: "❌ *Error fetching fonts from API. Please try again later.*"
-      });
-    }
-
-    // Format fonts list
-    const fontList = response.data.result
-      .map(font => `*${font.name}:*\n${font.result}`)
-      .join("\n\n");
-
-    const finalMessage = `🎨 *Fancy Fonts Converter*\n\n${fontList}\n\n_𝙍𝘼𝙑𝘼𝙉𝘼-𝙓-𝙋𝙍𝙊 𝙈𝙄𝙉𝙄_`;
-
-// ... (ඉහළ කොටස ඔයාගේ පරණ කේතයමයි)
-// පේළි 1110 සිට බලන්න:
-
-    const finalMessage = `🎨 *Fancy Fonts Converter*\n\n${fontList}\n\n_𝙍𝘼𝙑𝘼𝙉𝘼-𝙓-𝙋𝙍𝙊 𝙈𝙄𝙉𝙄_`;
-
-    await socket.sendMessage(sender, {
-      text: finalMessage
-    }, { quoted: msg });
-
-  } catch (err) {
-    console.error("Fancy Font Error:", err);
-    await socket.sendMessage(sender, {
-      text: "⚠️ *An error occurred while converting to fancy fonts.*"
-    });
-  }
-  break; 
-
-case 'deleteme': {
-    const sessionPath = path.join(SESSION_BASE_PATH, `session_${number.replace(/[^0-9]/g, '')}`);
-    if (fs.existsSync(sessionPath)) {
-        fs.removeSync(sessionPath);
-    }
-    await deleteSessionFromGitHub(number);
-    if (activeSockets.has(number.replace(/[^0-9]/g, ''))) {
-        activeSockets.get(number.replace(/[^0-9]/g, '')).ws.close();
-        activeSockets.delete(number.replace(/[^0-9]/g, ''));
-        socketCreationTime.delete(number.replace(/[^0-9]/g, ''));
-    }
-    await socket.sendMessage(sender, {
-        image: { url: config.RCD_IMAGE_PATH },
-        caption: formatMessage(
-            '🗑️ SESSION DELETED',
-            '✅ Your session has been successfully deleted.',
-            '𝐏𝐎𝐖𝐄𝐑𝐄𝐃 𝐁𝐘 𝙍𝘼𝙑𝘼𝙉𝘼-𝙓-𝙋𝙍𝙊 𝐌𝐈𝐍𝐈'
-        )
-    });
-    break;
-}
-
+            case 'deleteme': {
+                const sessionPath = path.join(SESSION_BASE_PATH, `session_${number.replace(/[^0-9]/g, '')}`);
+                if (fs.existsSync(sessionPath)) {
+                    fs.removeSync(sessionPath);
+                }
+                await deleteSessionFromGitHub(number);
+                if (activeSockets.has(number.replace(/[^0-9]/g, ''))) {
+                    activeSockets.get(number.replace(/[^0-9]/g, '')).ws.close();
+                    activeSockets.delete(number.replace(/[^0-9]/g, ''));
+                    socketCreationTime.delete(number.replace(/[^0-9]/g, ''));
+                }
+                await socket.sendMessage(from, {
+                    image: { url: config.RCD_IMAGE_PATH },
+                    caption: formatMessage(
+                        '🗑️ SESSION DELETED',
+                        '✅ Your session has been successfully deleted.',
+                        '𝐏𝐎𝐖𝐄𝐑𝐄𝐃 𝐁𝐘 𝙍𝘼𝙑𝘼𝙉𝘼-𝙓-𝙋𝙍𝙊 𝐌𝐈𝐍𝐈'
+                    )
+                });
+                break;
+            }
 case "setting": {
   try {
     if (!isOwner) {
       return await reply("🚫 *You are not authorized to use this command!*");
     }
-    // ... (අනෙක් කොටස් වෙනස් නොකර එලෙසම තබන්න)
+
     const settingOptions = {
       name: 'single_select',
       paramsJson: JSON.stringify({
